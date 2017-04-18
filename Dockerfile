@@ -15,6 +15,14 @@ RUN  apt update
 #安装git
 RUN  apt install -y git
 
+#自启动服务
+
+RUN  apt install -y supervisor
+
+COPY supervisord.conf /etc/supervisord/conf.d/supervisord.conf
+
+RUN  mkdir -p /var/log/supervisor
+
 # room 服务器
 
 RUN  apt install -y nodejs
@@ -41,9 +49,9 @@ RUN  echo "PATH='$PATH:/root/google_appengine/'" >> /etc/profile
 
 RUN  git clone https://github.com/webrtc/apprtc.git
 
-ADD  roomserver_init.sh /root/
+#ADD  roomserver_init.sh /root/
 
-RUN  chmod u+x /root/roomserver_init.sh
+#RUN  chmod u+x /root/roomserver_init.sh
 
 #RUN  /root/roomserver_init.sh
 
@@ -55,18 +63,23 @@ RUN  apt install -y mercurial
 
 ADD  golang.org.x.net.tar.gz /root/
 
-ADD  collider_init.sh /root/
+#ADD  collider_init.sh /root/
 
-RUN  chmod u+x /root/collider_init.sh
+#RUN  chmod u+x /root/collider_init.sh
 
-#RUN /root/collider_init.sh
+#RUN  /root/collider_init.sh
 
 
 # TURN STUN 服务器
 
-RUN  apt install -y wget
 
-RUN  wget https://github.com/downloads/libevent/libevent/libevent-2.0.21-stable.tar.gz
 
-RUN  wget http://turnserver.open-sys.org/downloads/v4.5.0.6/turnserver-4.5.0.6.tar.gz
+# 添加运行时脚本
 
+ADD  entrypoint.sh /bin/
+
+RUN  chmod 755 /bin/entrypoint.sh
+
+CMD  ["/usr/bin/supervisord"]
+
+ENTRYPOINT /bin/entrypoint.sh
