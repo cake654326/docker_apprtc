@@ -19,7 +19,7 @@ RUN  apt install -y git
 
 RUN  apt install -y supervisor
 
-COPY supervisord.conf /etc/supervisord/conf.d/supervisord.conf
+COPY supervisord.conf /etc/supervisor/supervisord.conf
 
 RUN  mkdir -p /var/log/supervisor
 
