@@ -1,67 +1,43 @@
 
 #!/bin/bash
 
-init_collider(){
+set -e
 
-	mkdir -p /root/collider_root/src
-
-	ln -s /root/apprtc/src/collider/collider /root/collider_root/src
-
-	ln -s /root/apprtc/src/collider/collidermain /root/collider_root/src
-
-	ln -s /root/apprtc/src/collider/collidertest /root/collider_root/src
-
-	ln -s /root/golang.org /root/collider_root/src
-
-	echo "export GOPATH=/root/collider_root" >> /etc/profile
-
-	. /etc/profile
-
-	echo ${GOPATH}
-
-	cd /root/collider_root/src
-
-	go get collidermain
-
-	go install collidermain
-}
-
-init_roomserver(){
-
-	. /etc/profile
-
-	cd /root/apprtc
-
-	apt install -y default-jre
-
-	npm install grunt-closurecompiler
+if [ -d /root/init ];then
 	
-	npm install 
-	
-	easy_install -U requests
+	for x in $(ls /root/init)
+	do
+		if [ -f /root/init/$x ];then
+			chmod u+x /root/init/$x
+			/bin/bash /root/init/$x
+		fi
+	done
 
-	sed -i 's|wss://|ws://|' src/app_engine/apprtc.py
+	rm -rf /root/init
+fi
 
-	sed -i 's|https://|http://|' src/app_engine/apprtc.py
-
-	machine_ip=$(ip add | grep inet | grep eth0 | awk '{print $2}' | sed  's|/.*$||')
-
-	sed -i 's|apprtc-ws.webrtc.org:443|'${machine_ip}':8089|' src/app_engine/constants.py
-	sed -i 's|apprtc-ws-2.webrtc.org:443|'${machine_ip}':8089|' src/app_engine/constants.py
-
-	grunt build
-}
-
-init_roomserver
-init_collider
+#if [ -f /root/init/roomsrv.sh ];then
+#	chmod u+x /root/init/roomsrv.sh
+#	/bin/bash /root/init/roomsrv.sh
+#	rm -rf /room/init/roomsrv.sh
+#fi
+#
+#if [ -f /root/init/collider.sh ];then
+#	chmod u+x /root/init/collider.sh
+#	/bin/bash /root/init/collider.sh
+#	rm -rf /room/init/collider.sh
+#fi
 
 case ${1} in
 	init)
 		;;
 	start)
-		echo "hello"
+		rm -rf /var/run/supervisor.sock
+		exec /usr/bin/supervisord -nc /etc/supervisor/supervisord.conf
 		;;
 	*)
-		exec $@
+		exec "$@"
 		;;
 esac
+
+

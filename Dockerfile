@@ -15,14 +15,6 @@ RUN  apt update
 #安装git
 RUN  apt install -y git
 
-#自启动服务
-
-RUN  apt install -y supervisor
-
-COPY supervisord.conf /etc/supervisor/supervisord.conf
-
-RUN  mkdir -p /var/log/supervisor
-
 # room 服务器
 
 RUN  apt install -y nodejs
@@ -72,14 +64,23 @@ ADD  golang.org.x.net.tar.gz /root/
 
 # TURN STUN 服务器
 
+#自启动服务
 
+RUN  apt install -y supervisor
+
+COPY conf /etc/supervisor/conf.d/
+
+RUN  mkdir -p /var/log/supervisor
+
+# 添加初始化脚本
+
+COPY init /root/init/
 
 # 添加运行时脚本
+COPY  entrypoint.sh /sbin/
 
-ADD  entrypoint.sh /bin/
+RUN   chmod 755 /sbin/entrypoint.sh
 
-RUN  chmod 755 /bin/entrypoint.sh
+ENTRYPOINT ["/bin/bash","/sbin/entrypoint.sh"]
 
-CMD  ["/usr/bin/supervisord"]
-
-ENTRYPOINT /bin/entrypoint.sh
+CMD  ["start"]
