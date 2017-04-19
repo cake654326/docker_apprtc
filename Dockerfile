@@ -72,6 +72,10 @@ COPY conf /etc/supervisor/conf.d/
 
 RUN  mkdir -p /var/log/supervisor
 
+# 添加证书
+RUN  mkdir /root/ssl
+COPY cert /root/ssl/
+
 # 添加初始化脚本
 
 COPY init /root/init/
