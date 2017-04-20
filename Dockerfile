@@ -62,7 +62,11 @@ ADD  golang.org.x.net.tar.gz /root/
 #RUN  /root/collider_init.sh
 
 
-# TURN STUN 服务器
+#TURN STUN 服务器
+
+COPY libevent-2.0.21-stable.tar.gz /root/
+
+RUN  git clone https://github.com/coturn/coturn.git
 
 #自启动服务
 
@@ -88,3 +92,5 @@ RUN   chmod 755 /sbin/entrypoint.sh
 ENTRYPOINT ["/bin/bash","/sbin/entrypoint.sh"]
 
 CMD  ["start"]
+
+EXPOSE 8080
