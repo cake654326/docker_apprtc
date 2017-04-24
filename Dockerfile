@@ -5,9 +5,9 @@ MAINTAINER preluoc "pre_luoc@sina.com"
 USER root
 
 #修改阿里源
-RUN  cp /etc/apt/sources.list /etc/apt/sources.list.bak
+#RUN  cp /etc/apt/sources.list /etc/apt/sources.list.bak
 
-ADD  sources.list /etc/apt/
+#ADD  sources.list /etc/apt/
 
 #升级apt
 RUN  apt update
